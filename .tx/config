@@ -1,0 +1,9 @@
+[main]
+host = https://app.transifex.com
+
+[o:foreman:p:foreman:r:foreman_ovirt]
+file_filter = locale/<lang>/foreman_ovirt.edit.po
+source_file = locale/foreman_ovirt.pot
+source_lang = en
+type = PO
+minimum_perc = 50

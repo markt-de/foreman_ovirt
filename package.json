@@ -1,0 +1,39 @@
+{
+  "name": "foreman_ovirt",
+  "version": "1.0.0",
+  "description": "DESCRIPTION",
+  "main": "index.js",
+  "scripts": {
+    "lint": "tfm-lint --plugin -d /webpack",
+    "test": "tfm-test --config jest.config.js",
+    "test:watch": "tfm-test --plugin --watchAll",
+    "test:current": "tfm-test --plugin --watch",
+    "publish-coverage": "tfm-publish-coverage",
+    "create-react-component": "yo react-domain"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markt-de/foreman_ovirt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/markt-de/foreman_ovirt/issues"
+  },
+  "peerDependencies": {
+    "@theforeman/vendor": ">= 15.0.0"
+  },
+  "dependencies": {
+    "react-intl": "^2.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.0",
+    "@theforeman/builder": ">= 15.0.1",
+    "@theforeman/eslint-plugin-foreman": ">= 15.0.1",
+    "@theforeman/find-foreman": ">= 15.0.1",
+    "@theforeman/test": ">= 15.0.1",
+    "@theforeman/vendor-dev": ">= 15.0.1",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.7.2",
+    "prettier": "^1.19.1",
+    "react-redux-test-utils": "^0.2.0"
+  }
+}
