@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.7', '< 4'
 
-  s.add_dependency 'deface'
   s.add_dependency 'fog-ovirt', '>= 2.0.3'
   s.add_dependency 'ovirt-engine-sdk', '>= 4.6.0'
 

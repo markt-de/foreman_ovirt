@@ -1,5 +1,3 @@
-require 'deface'
-
 module ForemanOvirt
   class Engine < ::Rails::Engine
     engine_name 'foreman_ovirt'
