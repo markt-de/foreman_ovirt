@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.metadata    = { 'is_foreman_plugin' => 'true' }
   s.license     = 'GPL-3.0'
   s.authors     = ['markt.de']
-  s.email       = ['oss-noreply@markt.de']
+  s.email       = ['github-oss-noreply@markt.de']
   s.homepage    = 'https://github.com/markt-de/foreman_ovirt'
   s.summary     = 'oVirt as a compute resource for The Foreman'
   # also update locale/gemspec.rb
