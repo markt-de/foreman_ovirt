@@ -11,9 +11,6 @@ jobs:
   build:
     name: Build Gem
     runs-on: ubuntu-latest
-    
-    outputs:
-      gem_name: ${{ steps.get_gem_name.outputs.name }}
 
     steps:
       - name: Checkout code
@@ -32,48 +29,57 @@ jobs:
 
       - name: Build gem
         run: gem build *.gemspec
-      
-      - name: Get gem name
-        id: get_gem_name
-        run: echo "name=$(ls *.gem)" >> $GITHUB_OUTPUT
 
       - name: Store gem as artifact
         uses: actions/upload-artifact@v4
         with:
           name: built-gem
-          path: ${{ steps.get_gem_name.outputs.name }}
+          path: ./*.gem
 
   # Final releases: publish on GitHub, but not on rubygems.org.
   release_production:
     name: Publish to RubyGems and GitHub
     runs-on: ubuntu-latest
     needs: build
-    if: "!contains(github.ref, '-')"
-    
+    if: ${{ !contains(github.ref, '-') }}
+
     permissions:
       id-token: write
       contents: write
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download built gem
         uses: actions/download-artifact@v4
         with:
           name: built-gem
+          path: .
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ruby
+
+      - name: Configure RubyGems Credentials
+        uses: rubygems/configure-rubygems-credentials@v1.0.0
 
       - name: Publish to RubyGems.org
-        uses: rubygems/release-gem@v1
+        run: gem push "$(ls -t *.gem | head -n 1)"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ needs.build.outputs.gem_name }}
+          files: ./*.gem
 
   # Pre-releases: publish on GitHub, but not on rubygems.org.
   release_prerelease:
     name: Publish to GitHub Releases (Pre-release)
     runs-on: ubuntu-latest
     needs: build
-    if: "contains(github.ref, '-')"
+    if: ${{ contains(github.ref, '-') }}
 
     permissions:
       contents: write
@@ -83,9 +89,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: built-gem
+          path: .
 
       - name: Create GitHub Pre-Release
         uses: softprops/action-gh-release@v2
         with:
           prerelease: true
-          files: ${{ needs.build.outputs.gem_name }}
+          files: ./*.gem
