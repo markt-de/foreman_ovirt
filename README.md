@@ -21,7 +21,9 @@ This plugin continues the oVirt support that was part of Foreman up to version 3
 
 ## Installation
 
-### From OS packages
+### From packages
+
+First setup the [official Foreman (plugin) repository](https://theforeman.org/manuals/latest/index.html#3.3InstallFromPackages).
 
 On Rocky/Alma/RedHat:
 
