@@ -36,7 +36,7 @@ const OvirtCard = ({ hostDetails }) => {
     );
   }
 
-  if (!vm || Object.keys(vm).length === 0) {
+  if (!vm || Object.keys(vm).length === 0 || provider !== 'ovirt') {
     return null;
   }
 
