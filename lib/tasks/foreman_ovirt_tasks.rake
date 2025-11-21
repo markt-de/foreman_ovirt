@@ -11,8 +11,10 @@ if defined?(Rails) && Rails.application
         all_migrations = migration_context.migrations.map(&:version)
         run_migrations = migration_context.get_all_versions
 
-        # A migration needs to be run if it exists on disk but is not yet marked as run in the database.
-        if all_migrations.include?(version_to_skip) && !run_migrations.include?(version_to_skip)
+        # A migration needs to be run if
+        # - it's not a fresh (empty) database
+        # - the migration exists on disk but is not yet marked as run in the database
+        if migration_context.current_version != 0 && all_migrations.include?(version_to_skip) && !run_migrations.include?(version_to_skip)
           Rails.logger.info "[foreman_ovirt] Marking core migration #{version_to_skip} (MigrateOvirtResources) as complete to prevent data loss."
           ActiveRecord::SchemaMigration.create!(version: version_to_skip.to_s)
           Rails.logger.info "[foreman_ovirt] Core migration successfully skipped."
