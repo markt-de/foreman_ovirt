@@ -11,82 +11,83 @@ module ForemanOvirt
     should allow_values('http://foo.com', 'http://bar.com/baz').for(:url)
     should_not allow_values('ftp://foo.com', 'buz').for(:url)
 
-    test "#associated_host matches any NIC" do
-      host = FactoryBot.create(:host, :mac => 'ca:d0:e6:32:16:97')
+    test '#associated_host matches any NIC' do
+      host = FactoryBot.create(:host, mac: 'ca:d0:e6:32:16:97')
       cr = FactoryBot.build_stubbed(:ovirt_cr)
-      iface1 = mock('iface1', :mac => '36:48:c5:c9:86:f2')
-      iface2 = mock('iface2', :mac => 'ca:d0:e6:32:16:97')
-      vm = mock('vm', :interfaces => [iface1, iface2])
+      iface1 = mock('iface1', mac: '36:48:c5:c9:86:f2')
+      iface2 = mock('iface2', mac: 'ca:d0:e6:32:16:97')
+      vm = mock('vm', interfaces: [iface1, iface2])
       assert_equal host, as_admin { cr.associated_host(vm) }
     end
 
-    test "#associated_host matches NIC mac with uppercase letters" do
-      host = FactoryBot.create(:host, :mac => 'ca:d0:e6:32:16:97')
+    test '#associated_host matches NIC mac with uppercase letters' do
+      host = FactoryBot.create(:host, mac: 'ca:d0:e6:32:16:97')
       cr = FactoryBot.build_stubbed(:ovirt_cr)
-      iface1 = mock('iface1', :mac => '36:48:c5:c9:86:f2')
-      iface2 = mock('iface2', :mac => 'CA:D0:E6:32:16:97')
-      vm = mock('vm', :interfaces => [iface1, iface2])
+      iface1 = mock('iface1', mac: '36:48:c5:c9:86:f2')
+      iface2 = mock('iface2', mac: 'CA:D0:E6:32:16:97')
+      vm = mock('vm', interfaces: [iface1, iface2])
       assert_equal host, as_admin { cr.associated_host(vm) }
     end
 
-    describe "destroy_vm" do
-      it "handles situation when vm is not present" do
+    describe 'destroy_vm' do
+      it 'handles situation when vm is not present' do
         cr = mock_cr_servers(ForemanOvirt::Ovirt.new, empty_servers)
         cr.expects(:find_vm_by_uuid).raises(ActiveRecord::RecordNotFound)
         assert cr.destroy_vm('abc')
       end
     end
 
-    describe "find_vm_by_uuid" do
-      it "raises RecordNotFound when the vm does not exist" do
+    describe 'find_vm_by_uuid' do
+      it 'raises RecordNotFound when the vm does not exist' do
         cr = mock_cr_servers(ForemanOvirt::Ovirt.new, empty_servers)
         assert_find_by_uuid_raises(ActiveRecord::RecordNotFound, cr)
       end
 
-      it "raises RecordNotFound when the compute raises retrieve error" do
+      it 'raises RecordNotFound when the compute raises retrieve error' do
         exception = Fog::Ovirt::Errors::OvirtEngineError.new(StandardError.new('VM not found'))
         cr = mock_cr_servers(ForemanOvirt::Ovirt.new, servers_raising_exception(exception))
         assert_find_by_uuid_raises(ActiveRecord::RecordNotFound, cr)
       end
     end
 
-    describe "associating operating system" do
+    describe 'associating operating system' do
       require 'fog/ovirt/models/compute/operating_system'
 
       setup do
-        operating_systems_xml = Nokogiri::XML(File.read(File.join(File.dirname(__FILE__), '../fixtures/ovirt_operating_systems.xml')))
+        operating_systems_xml = Nokogiri::XML(File.read(File.join(File.dirname(__FILE__),
+          '../fixtures/ovirt_operating_systems.xml')))
         @ovirt_oses = operating_systems_xml.xpath('/operating_systems/operating_system').map do |os|
-          Fog::Ovirt::Compute::OperatingSystem.new({ :id => os[:id], :name => (os / 'name').text, :href => os[:href] })
+          Fog::Ovirt::Compute::OperatingSystem.new({ id: os[:id], name: (os / 'name').text, href: os[:href] })
         end
         @os_hashes = @ovirt_oses.map do |ovirt_os|
-          { :id => ovirt_os.id, :name => ovirt_os.name, :href => ovirt_os.href }
+          { id: ovirt_os.id, name: ovirt_os.name, href: ovirt_os.href }
         end
         @compute_resource = FactoryBot.build(:ovirt_cr)
-        @host = FactoryBot.build(:host, :mac => 'ca:d0:e6:32:16:97')
-        @quota = Fog::Ovirt::Compute::Quota.new({ :id => '1', :name => "Default" })
+        @host = FactoryBot.build(:host, mac: 'ca:d0:e6:32:16:97')
+        @quota = Fog::Ovirt::Compute::Quota.new({ id: '1', name: 'Default' })
       end
 
       it 'maps operating system to ovirt operating systems' do
         @compute_resource.stubs(:available_operating_systems).returns(@os_hashes)
-        assert_equal "other_linux", @compute_resource.determine_os_type(@host)
+        assert_equal 'other_linux', @compute_resource.determine_os_type(@host)
 
         @host.operatingsystem = operatingsystems(:redhat)
-        assert_equal "rhel_6", @compute_resource.determine_os_type(@host)
+        assert_equal 'rhel_6', @compute_resource.determine_os_type(@host)
 
         @host.architecture = architectures(:x86_64)
-        assert_equal "rhel_6x64", @compute_resource.determine_os_type(@host)
+        assert_equal 'rhel_6x64', @compute_resource.determine_os_type(@host)
 
         @host.operatingsystem = operatingsystems(:ubuntu1210)
-        assert_equal "ubuntu_12_10", @compute_resource.determine_os_type(@host)
+        assert_equal 'ubuntu_12_10', @compute_resource.determine_os_type(@host)
 
         @host.operatingsystem = FactoryBot.create(:operatingsystem)
-        assert_equal "other", @compute_resource.determine_os_type(@host)
+        assert_equal 'other', @compute_resource.determine_os_type(@host)
       end
 
       it 'respects host param ovirt_ostype' do
         @compute_resource.stubs(:available_operating_systems).returns(@os_hashes)
-        @host.stubs(:params).returns({'ovirt_ostype' => 'some_os'})
-        assert_equal "some_os", @compute_resource.determine_os_type(@host)
+        @host.stubs(:params).returns({ 'ovirt_ostype' => 'some_os' })
+        assert_equal 'some_os', @compute_resource.determine_os_type(@host)
       end
 
       it 'caches the operating systems in the compute resource' do
@@ -98,10 +99,12 @@ module ForemanOvirt
       end
 
       it 'handles a case when the operating systems endpoint is missing' do
-        client_mock = mock.tap { |m| m.stubs(:operating_systems).raises(Fog::Ovirt::Errors::OvirtEngineError, StandardError.new('404')) }
+        client_mock = mock.tap do |m|
+          m.stubs(:operating_systems).raises(Fog::Ovirt::Errors::OvirtEngineError, StandardError.new('404'))
+        end
         @compute_resource.stubs(:client).returns(client_mock)
         client_mock.stubs(:quotas).returns([@quota])
-        refute @compute_resource.supports_operating_systems?
+        assert_not @compute_resource.supports_operating_systems?
       end
     end
 
@@ -110,7 +113,7 @@ module ForemanOvirt
 
       before do
         @compute_resource = FactoryBot.build(:ovirt_cr)
-        @quota = Fog::Ovirt::Compute::Quota.new({ :id => '1', :name => "Default" })
+        @quota = Fog::Ovirt::Compute::Quota.new({ id: '1', name: 'Default' })
         @client_mock = mock.tap { |m| m.stubs(datacenters: [], quotas: [@quota]) }
       end
 
@@ -127,7 +130,7 @@ module ForemanOvirt
 
       before do
         @compute_resource = FactoryBot.build(:ovirt_cr)
-        @quota = Fog::Ovirt::Compute::Quota.new({ :id => '1', :name => 'Default' })
+        @quota = Fog::Ovirt::Compute::Quota.new({ id: '1', name: 'Default' })
         @client_mock = mock.tap { |m| m.stubs(datacenters: [], quotas: [@quota]) }
         @compute_resource.stubs(:client).returns(@client_mock)
       end
@@ -157,19 +160,18 @@ module ForemanOvirt
     describe 'name-id substitution for attributes: network, storage_domain and cluster' do
       let(:cr) do
         mock_cr(FactoryBot.build(:ovirt_cr),
-          :clusters => [
-            stub(:id => 'c1', :name => 'cluster 1'),
-            stub(:id => 'c2', :name => 'cluster 2'),
+          clusters: [
+            stub(id: 'c1', name: 'cluster 1'),
+            stub(id: 'c2', name: 'cluster 2'),
           ],
-          :networks => [
-            stub(:id => 'net1', :name => 'network 1'),
-            stub(:id => 'net2', :name => 'network 2'),
+          networks: [
+            stub(id: 'net1', name: 'network 1'),
+            stub(id: 'net2', name: 'network 2'),
           ],
-          :storage_domains => [
-            stub(:id => '312f6', :name => 'domain 1'),
-            stub(:id => '382ec', :name => 'domain 2'),
-          ]
-        )
+          storage_domains: [
+            stub(id: '312f6', name: 'domain 1'),
+            stub(id: '382ec', name: 'domain 2'),
+          ])
       end
 
       test 'cluster validation - id entered' do
@@ -218,24 +220,23 @@ module ForemanOvirt
     describe '#normalize_vm_attrs' do
       let(:cr) do
         mock_cr(FactoryBot.build(:ovirt_cr),
-          :clusters => [
-            stub(:id => 'c1', :name => 'cluster 1'),
-            stub(:id => 'c2', :name => 'cluster 2'),
+          clusters: [
+            stub(id: 'c1', name: 'cluster 1'),
+            stub(id: 'c2', name: 'cluster 2'),
           ],
-          :templates => [
-            stub(:id => 'tpl1', :name => 'template 1'),
-            stub(:id => 'tpl2', :name => 'template 2'),
+          templates: [
+            stub(id: 'tpl1', name: 'template 1'),
+            stub(id: 'tpl2', name: 'template 2'),
           ],
-          :networks => [
-            stub(:id => 'net1', :name => 'network 1'),
-            stub(:id => 'net2', :name => 'network 2'),
+          networks: [
+            stub(id: 'net1', name: 'network 1'),
+            stub(id: 'net2', name: 'network 2'),
           ],
-          :storage_domains => [
-            stub(:id => '312f6', :name => 'domain 1'),
-            stub(:id => '382ec', :name => 'domain 2'),
-            stub(:id => '3ea4f', :name => 'domain 3'),
-          ]
-        )
+          storage_domains: [
+            stub(id: '312f6', name: 'domain 1'),
+            stub(id: '382ec', name: 'domain 2'),
+            stub(id: '3ea4f', name: 'domain 3'),
+          ])
       end
 
       test 'maps cluster to cluster_id' do
@@ -244,7 +245,7 @@ module ForemanOvirt
         }
         normalized = cr.normalize_vm_attrs(vm_attrs)
 
-        refute(normalized.has_key?('cluster'))
+        assert_not(normalized.has_key?('cluster'))
         assert_equal('c1', normalized['cluster_id'])
       end
 
@@ -263,7 +264,7 @@ module ForemanOvirt
         }
         normalized = cr.normalize_vm_attrs(vm_attrs)
 
-        refute(normalized.has_key?('template'))
+        assert_not(normalized.has_key?('template'))
         assert_equal('tpl1', normalized['template_id'])
       end
 
@@ -375,7 +376,7 @@ module ForemanOvirt
         assert_equal 'vnc', cr.display_type
       end
 
-      test "display type can be set" do
+      test 'display type can be set' do
         expected = 'spice'
         cr.display_type = 'Spice'
         assert_equal expected, cr.attrs[:display]
@@ -385,7 +386,7 @@ module ForemanOvirt
 
       test "don't allow wrong display type to be set" do
         cr.display_type = 'teletype'
-        refute cr.valid?
+        assert_not cr.valid?
       end
     end
 
@@ -397,7 +398,7 @@ module ForemanOvirt
         assert_equal 'en-us', cr.keyboard_layout
       end
 
-      test "keyboard layout can be set" do
+      test 'keyboard layout can be set' do
         expected = 'hu'
         cr.keyboard_layout = 'hu'
         assert_equal expected, cr.attrs[:keyboard_layout]
@@ -407,7 +408,7 @@ module ForemanOvirt
 
       test "don't allow wrong keyboard layout to be set" do
         cr.keyboard_layout = 'fake-layout'
-        refute cr.valid?
+        assert_not cr.valid?
       end
     end
   end

@@ -6,20 +6,20 @@ module ForemanOvirt
       User.current = users :admin
     end
 
-    test "#new_volume should respect preallocate flag" do
+    test '#new_volume should respect preallocate flag' do
       ovirt = ForemanOvirt::Ovirt.new
-      volume = ovirt.new_volume(:preallocate => '1')
+      volume = ovirt.new_volume(preallocate: '1')
       assert_equal 'false', volume.sparse
       assert_equal 'raw', volume.format
 
-      volume = ovirt.new_volume(:preallocate => '0')
+      volume = ovirt.new_volume(preallocate: '0')
       assert_equal 'true', volume.sparse
 
       volume = ovirt.new_volume
       assert_equal 'true', volume.sparse
     end
 
-    test "accepts multiple certificates" do
+    test 'accepts multiple certificates' do
       ovirt = ForemanOvirt::Ovirt.new
 
       cert1 = "-----BEGIN CERTIFICATE-----\r\n" +
@@ -53,7 +53,7 @@ module ForemanOvirt
               "Gwdjct3y4yYUO45lUsUfHqX8vk/4ttW5zYeDiW+HArJz+9VUXNbEdury4kGuHgBj\r\n" +
               "xHD4Bsul65+hHZ9QywKU26F1A6TLkYpQ2rk/Dx9LGICM4m4IlHjWJPFsQdtkyOor\r\n" +
               "osxMtcaZZ1E=\r\n" +
-              "-----END CERTIFICATE-----"
+              '-----END CERTIFICATE-----'
 
       cert2 = "-----BEGIN CERTIFICATE-----\r\n" +
               "MIIFdDCCA1ygAwIBAgIJAMJiz/f2HDayMA0GCSqGSIb3DQEBCwUAME8xCzAJBgNV\r\n" +
@@ -86,7 +86,7 @@ module ForemanOvirt
               "wKFSycux0qh49d/9TQ0KOiooK/sjS2dbz5bj6Z//6MPmSvRlwPhDhRDaT7D8u7cU\r\n" +
               "svKQIHrQJve7KJxXUuPTh3zawRXdDGmdm7D3CbDOqpAIAnR+/rKXnPzQYBMCvCDG\r\n" +
               "2lSBFSVrAlo=\r\n" +
-              "-----END CERTIFICATE-----"
+              '-----END CERTIFICATE-----'
 
       store = ovirt.send(:ca_cert_store, cert1 + "\r\n" + cert2)
       assert store.verify(OpenSSL::X509::Certificate.new(cert1))

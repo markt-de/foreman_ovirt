@@ -2,10 +2,10 @@
 if defined?(Rails) && Rails.application
   namespace :foreman_ovirt do
     namespace :db do
-      desc "Prevents the destructive core oVirt data migration from being run by marking it as complete."
-      task :prevent_core_migration => :environment do
+      desc 'Prevents the destructive core oVirt data migration from being run by marking it as complete.'
+      task prevent_core_migration: :environment do
         # The version of the Foreman core migration to skip.
-        version_to_skip = 20250414121956
+        version_to_skip = 20_250_414_121_956
         migration_context = ActiveRecord::Base.connection.migration_context
 
         all_migrations = migration_context.migrations.map(&:version)
@@ -17,7 +17,7 @@ if defined?(Rails) && Rails.application
         if migration_context.current_version != 0 && all_migrations.include?(version_to_skip) && !run_migrations.include?(version_to_skip)
           Rails.logger.info "[foreman_ovirt] Marking core migration #{version_to_skip} (MigrateOvirtResources) as complete to prevent data loss."
           ActiveRecord::SchemaMigration.create!(version: version_to_skip.to_s)
-          Rails.logger.info "[foreman_ovirt] Core migration successfully skipped."
+          Rails.logger.info '[foreman_ovirt] Core migration successfully skipped.'
         else
           Rails.logger.debug "[foreman_ovirt] Core migration #{version_to_skip} does not need to be skipped (already migrated or not found)."
         end
