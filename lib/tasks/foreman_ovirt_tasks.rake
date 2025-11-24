@@ -30,3 +30,18 @@ if defined?(Rails) && Rails.application
     Rake::Task['db:migrate'].enhance(['foreman_ovirt:db:prevent_core_migration'])
   end
 end
+
+# Tests
+namespace :test do
+  desc 'Test ForemanOvirt'
+  Rake::TestTask.new(:foreman_ovirt) do |t|
+    test_dir = File.expand_path('../../test', __dir__)
+    t.libs << 'test'
+    t.libs << test_dir
+    t.pattern = "#{test_dir}/**/*_test.rb"
+    t.verbose = true
+    t.warning = false
+  end
+end
+
+Rake::Task[:test].enhance ['test:foreman_ovirt']
