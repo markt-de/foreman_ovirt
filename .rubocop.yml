@@ -3,3 +3,6 @@ inherit_from: .rubocop_todo.yml
 inherit_gem:
   theforeman-rubocop:
     - default.yml
+
+AllCops:
+  TargetRubyVersion: 2.7
