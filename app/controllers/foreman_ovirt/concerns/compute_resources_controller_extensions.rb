@@ -4,7 +4,7 @@ module ForemanOvirt
       extend ActiveSupport::Concern
 
       prepended do
-        before_action :change_datacenter_to_uuid, only: [:create, :update]
+        before_action :change_datacenter_to_uuid, only: %i[create update]
         rescue_from ::ProxyAPI::Ovirt::Unauthorized, with: :render_ovirt_unauthorized_error
       end
 
@@ -38,7 +38,9 @@ module ForemanOvirt
       private
 
       def change_datacenter_to_uuid
-        return unless params[:compute_resource] && params[:compute_resource][:provider] == 'Ovirt' && params[:compute_resource][:datacenter]
+        unless params[:compute_resource] && params[:compute_resource][:provider] == 'Ovirt' && params[:compute_resource][:datacenter]
+          return
+        end
         proxy = find_resource(params[:id]) if params[:id].present?
         proxy ||= ::ProxyAPI::Ovirt.new(
           url: params[:compute_resource][:url],
@@ -53,7 +55,7 @@ module ForemanOvirt
       end
 
       def render_ovirt_unauthorized_error
-        render_error "401 Unauthorized", status: :unauthorized
+        render_error '401 Unauthorized', status: :unauthorized
       end
     end
   end
