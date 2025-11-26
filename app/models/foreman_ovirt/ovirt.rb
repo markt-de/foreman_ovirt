@@ -730,7 +730,7 @@ module ForemanOvirt
 
     def volume_to_attributes(volume, template_volumes)
       {
-        size_gb: (volume.size.to_i / 1.gigabyte),
+        size_gb: (volume.size.to_i / 1.gigabyte).to_s,
         storage_domain: volume.storage_domain,
         preallocate: (volume.sparse == 'true') ? '0' : '1',
         wipe_after_delete: volume.wipe_after_delete,
