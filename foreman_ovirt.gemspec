@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.files = Dir['{app,config,db,lib,locale,webpack}/**/*'] + ['LICENSE', 'Rakefile', 'README.md', 'package.json']
   s.test_files = Dir['test/**/*'] + Dir['webpack/**/__tests__/*.js']
 
-  s.required_ruby_version = '>= 2.7', '< 4'
+  s.required_ruby_version = '>= 2.7'
 
   s.add_dependency 'fog-ovirt', '>= 2.0.3'
   s.add_dependency 'ovirt-engine-sdk', '>= 4.6.0'
