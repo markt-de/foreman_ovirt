@@ -28,3 +28,19 @@ if defined?(Rails) && Rails.application
     Rake::Task['db:migrate'].enhance(['foreman_ovirt:db:prevent_core_migration'])
   end
 end
+
+# Updated section for your foreman_ovirt_tasks.rake
+namespace :test do
+  desc "Run all tests for foreman_ovirt"
+  Rake::TestTask.new(:foreman_ovirt => "test:prepare") do |t|
+    # Add the core foreman tests and your plugin lib/test to the load path
+    t.libs << "test"
+    t.libs << File.expand_path("../../test", __dir__)
+
+    # This is the "standard" way Foreman plugins find their tests
+    t.pattern = File.expand_path("../../test/**/*_test.rb", __dir__)
+    t.verbose = true
+  end
+end
+
+
