@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v2.0.2] - 2025-11-18
+
+### Fixed
+*  Hide card if not compute resource oVirt ([#9])
+
 ## [v2.0.1] - 2025-08-18
 
 ### Fixed
@@ -21,7 +26,8 @@ This is mostly a 1:1 port of the original code from Foreman 3.15.0.
 ### Fixed
 * Fix rendering of JSON partials on Rails 7
 
-[Unreleased]: https://github.com/markt-de/foreman_ovirt/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/markt-de/foreman_ovirt/compare/v2.0.2...HEAD
+[v2.0.2]: https://github.com/markt-de/foreman_ovirt/compare/v2.0.1...v2.0.2
 [v2.0.1]: https://github.com/markt-de/foreman_ovirt/compare/v2.0.0...v2.0.1
 [v2.0.0]: https://github.com/markt-de/foreman_ovirt/compare/v1.0.0...v2.0.0
-[#1]: https://github.com/markt-de/foreman_ovirt/pull/1
+[#9]: https://github.com/markt-de/foreman_ovirt/pull/9

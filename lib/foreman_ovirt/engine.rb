@@ -8,7 +8,7 @@ module ForemanOvirt
       end
     end
 
-    initializer 'foreman_ovirt.register_plugin', :before => :finisher_hook do |app|
+    initializer 'foreman_ovirt.register_plugin', before: :finisher_hook do |app|
       app.reloader.to_prepare do
         Foreman::Plugin.register :foreman_ovirt do
           requires_foreman '>= 3.16'
@@ -18,8 +18,8 @@ module ForemanOvirt
           register_global_js_file 'global'
 
           security_block :foreman_ovirt do
-            permission :view_compute_resources, { :'foreman_ovirt/compute_resources' =>
-              [:available_vnic_profiles] }
+            permission :view_compute_resources,
+              { 'foreman_ovirt/compute_resources': [:available_vnic_profiles] }
           end
         end
       end

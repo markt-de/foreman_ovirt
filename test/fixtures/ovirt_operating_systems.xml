@@ -202,42 +202,4 @@
     <name>windows_10</name>
     <description>Windows 10</description>
     <large_icon href="/api/icons/148d175f-bc51-4136-a85b-b6d5df975b12" id="148d175f-bc51-4136-a85b-b6d5df975b12"/>
-    <small_icon href="/api/icons/5f8bceee-71ce-4665-8104-bc868d92480c" id="5f8bceee-71ce-4665-8104-bc868d92480c"/>
-  </operating_system>
-  <operating_system href="/api/operatingsystems/1255" id="1255">
-    <name>ubuntu_13_10</name>
-    <description>Ubuntu Saucy Salamander</description>
-    <large_icon href="/api/icons/b415d06d-9ebd-4db1-91a8-0be4b91ebe7d" id="b415d06d-9ebd-4db1-91a8-0be4b91ebe7d"/>
-    <small_icon href="/api/icons/08e0268d-1d29-4609-87d7-2101e39dcbb5" id="08e0268d-1d29-4609-87d7-2101e39dcbb5"/>
-  </operating_system>
-  <operating_system href="/api/operatingsystems/1254" id="1254">
-    <name>ubuntu_13_04</name>
-    <description>Ubuntu Raring Ringtails</description>
-    <large_icon href="/api/icons/5cf3e2cf-1f60-43cf-ab0c-e20c5b9140f3" id="5cf3e2cf-1f60-43cf-ab0c-e20c5b9140f3"/>
-    <small_icon href="/api/icons/295ce8a2-3f75-4ab8-911f-ef6f89f3234d" id="295ce8a2-3f75-4ab8-911f-ef6f89f3234d"/>
-  </operating_system>
-  <operating_system href="/api/operatingsystems/1253" id="1253">
-    <name>ubuntu_12_10</name>
-    <description>Ubuntu Quantal Quetzal</description>
-    <large_icon href="/api/icons/fa867707-0914-4405-a87a-d3549c2329ed" id="fa867707-0914-4405-a87a-d3549c2329ed"/>
-    <small_icon href="/api/icons/3a8eaa56-2a80-4053-b736-cd247131a23b" id="3a8eaa56-2a80-4053-b736-cd247131a23b"/>
-  </operating_system>
-  <operating_system href="/api/operatingsystems/1252" id="1252">
-    <name>ubuntu_12_04</name>
-    <description>Ubuntu Precise Pangolin LTS</description>
-    <large_icon href="/api/icons/30db59e4-62cc-4142-857d-7a0bc92d68d3" id="30db59e4-62cc-4142-857d-7a0bc92d68d3"/>
-    <small_icon href="/api/icons/7bf1c98a-e2e4-4290-a3b5-8ac1a2e8bd64" id="7bf1c98a-e2e4-4290-a3b5-8ac1a2e8bd64"/>
-  </operating_system>
-  <operating_system href="/api/operatingsystems/1193" id="1193">
-    <name>sles_11</name>
-    <description>SUSE Linux Enterprise Server 11</description>
-    <large_icon href="/api/icons/56ecd832-7a11-4bf0-9afb-7a3a2b54efb3" id="56ecd832-7a11-4bf0-9afb-7a3a2b54efb3"/>
-    <small_icon href="/api/icons/ef709529-51e6-440e-95bf-9465a74112b8" id="ef709529-51e6-440e-95bf-9465a74112b8"/>
-  </operating_system>
-  <operating_system href="/api/operatingsystems/1256" id="1256">
-    <name>ubuntu_14_04</name>
-    <description>Ubuntu Trusty Tahr LTS</description>
-    <large_icon href="/api/icons/387aa324-ba3a-40b6-bd99-653bfb3e9e43" id="387aa324-ba3a-40b6-bd99-653bfb3e9e43"/>
-    <small_icon href="/api/icons/39216915-ed55-430f-a494-2c456c428aac" id="39216915-ed55-430f-a494-2c456c428aac"/>
-  </operating_system>
-</operating_systems>
+    <small_icon href="/api/icons/
