@@ -1,10 +1,9 @@
 FactoryBot.define do
-  # Keep your host factory
+  # This file defines factories for the ForemanOvirt plugin. 
   factory :ovirt_host, parent: :host do
     name { "foreman_ovirt" }
   end
-
-  # ADD THIS: This is what the test errors are asking for
+  # The factory for the oVirt compute resource.
   factory :ovirt_cr, class: 'ForemanOvirt::Ovirt', parent: :compute_resource do
     name { "oVirt" }
     url { "https://ovirt.example.com/ovirt-engine/api" }
