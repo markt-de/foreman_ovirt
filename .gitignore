@@ -15,3 +15,5 @@ package-lock.json
 Gemfile.lock
 coverage
 .*.sw[op]
+.idea/
+vendor/
