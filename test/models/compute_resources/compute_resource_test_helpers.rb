@@ -1,70 +1,73 @@
+# rubocop:disable Metrics/ModuleLength
 module ComputeResourceTestHelpers
   def empty_servers
-    servers = mock()
+    servers = mock
     servers.stubs(:get).returns(nil)
     servers
   end
 
-  def servers_raising_exception(ex)
-    servers = mock()
-    servers.stubs(:get).raises(ex)
+  def servers_raising_exception(exception)
+    servers = mock
+    servers.stubs(:get).raises(exception)
     servers
   end
 
-  def mock_cr_servers(cr, servers)
-    client = mock()
+  def mock_cr_servers(compute_resource, servers)
+    client = mock
     client.stubs(:servers).returns(servers)
 
-    cr.stubs(:client).returns(client)
-    cr
+    compute_resource.stubs(:client).returns(client)
+    compute_resource
   end
 
-  def mock_cr(cr, attributes)
+  def mock_cr(compute_resource, attributes)
     attributes.each do |attr, stubbed_value|
-      cr.stubs(attr).returns(stubbed_value)
+      compute_resource.stubs(attr).returns(stubbed_value)
     end
-    cr
+    compute_resource
   end
 
-  def assert_find_by_uuid_raises(ex_class, cr)
+  def assert_find_by_uuid_raises(ex_class, compute_resource)
     assert_raises(ex_class) do
-      cr.find_vm_by_uuid('abc')
+      compute_resource.find_vm_by_uuid('abc')
     end
   end
 
-  def assert_blank_attr_nilified(cr, attr_name)
+  def assert_blank_attr_nilified(compute_resource, attr_name)
     vm_attrs = {
       attr_name => '',
     }
-    normalized = cr.normalize_vm_attrs(vm_attrs)
+    normalized = compute_resource.normalize_vm_attrs(vm_attrs)
 
-    assert(normalized.has_key?(attr_name))
+    assert(normalized.key?(attr_name))
     assert_nil(normalized[attr_name])
   end
 
-  def assert_attrs_mapped(cr, attr_before, attr_after)
+  def assert_attrs_mapped(compute_resource, attr_before, attr_after)
     vm_attrs = {
       attr_before => 'ATTR_VALUE',
     }
-    normalized = cr.normalize_vm_attrs(vm_attrs)
+    normalized = compute_resource.normalize_vm_attrs(vm_attrs)
 
-    refute(normalized.has_key?(attr_before))
+    assert_not(normalized.key?(attr_before))
     assert_equal('ATTR_VALUE', normalized[attr_after])
   end
 
-  def assert_blank_mapped_attr_nilified(cr, attr_before, attr_after)
+  def assert_blank_mapped_attr_nilified(compute_resource, attr_before, attr_after)
     vm_attrs = {
       attr_before => '',
     }
-    normalized = cr.normalize_vm_attrs(vm_attrs)
+    normalized = compute_resource.normalize_vm_attrs(vm_attrs)
 
-    refute(normalized.has_key?(attr_before))
-    assert(normalized.has_key?(attr_after))
+    assert_not(normalized.key?(attr_before))
+    assert(normalized.key?(attr_after))
     assert_nil(normalized[attr_after])
   end
 
+  # rubocop:disable Metrics/MethodLength
+  #
   def allowed_vm_attr_names
-    @allowed_vm_attr_names ||= %w(
+    @allowed_vm_attr_names ||= %w[
       add_cdrom
       annotation
       availability_zone
@@ -111,14 +114,16 @@ module ComputeResourceTestHelpers
       tenant_id
       tenant_name
       volumes_attributes
-    )
+    ]
   end
 
-  def check_vm_attribute_names(cr)
-    normalized_keys = cr.normalize_vm_attrs({}).keys
+  # rubocop:enable Metrics/MethodLength
+
+  def check_vm_attribute_names(compute_resource)
+    normalized_keys = compute_resource.normalize_vm_attrs({}).keys
 
     normalized_keys.each do |name|
-      assert(name == name.to_s.underscore, "Attribute '#{name}' breaks naming conventions. All attributes should be in snake_case.")
+      assert_equal(name, name.to_s.underscore, "Attribute '#{name}' breaks naming conventions. All attributes should be in snake_case.")
     end
 
     unexpected_names = normalized_keys - (normalized_keys & allowed_vm_attr_names)
@@ -127,3 +132,4 @@ module ComputeResourceTestHelpers
     assert_empty(unexpected_names, msg)
   end
 end
+# rubocop:enable Metrics/ModuleLength
