@@ -37,19 +37,17 @@ end
 
 # Define test tasks for the plugin.
 namespace :test do
-  desc 'Run all tests for foreman_ovirt'
-  # We depend on test:prepare to ensure the database is ready
-  Rake::TestTask.new(foreman_ovirt: 'test:prepare') do |t|
-    test_dir = File.expand_path(
-      '../../test', __dir__
-    )
-    t.libs << 'test'
-    t.libs << test_dir
+  desc 'Test foreman_ovirt'
+  Rake::TestTask.new(:foreman_ovirt) do |t|
+    test_dir = File.join(File.dirname(__FILE__), '../..', 'test')
+    t.libs << ['test', test_dir]
     t.pattern = "#{test_dir}/**/*_test.rb"
     t.verbose = true
     t.warning = false
   end
 end
 
-# Add our plugin tests to the main 'rake test' command
-Rake::Task[:test].enhance ['test:foreman_ovirt'] if Rake::Task.task_defined?(:test)
+Rake::Task[:test].enhance ['test:foreman_ovirt']
+
+load 'tasks/jenkins.rake'
+Rake::Task['jenkins:unit'].enhance ['test:foreman_ovirt'] if Rake::Task.task_defined?(:'jenkins:unit')
