@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module FogExtensions
   module Ovirt
     module Template
       def full_name
-        version = full_version.present? ? " (#{full_version})" : ""
+        version = full_version.present? ? " (#{full_version})" : ''
         "#{name}#{version}"
       end
 

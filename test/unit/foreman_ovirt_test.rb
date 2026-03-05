@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'test_plugin_helper'
 
 class ForemanOvirtTest < ActiveSupport::TestCase
   setup do
-    User.current = User.find_by_login 'admin'
+    User.current = User.find_by login: 'admin'
   end
 
   test 'the truth' do

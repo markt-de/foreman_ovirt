@@ -23,11 +23,11 @@ module ForemanOvirt
         compute_resource_params_filter_without_ovirt.tap do |filter|
           # Now, add the oVirt specific parameters to the existing filter.
           filter.permit :datacenter,
-                        :ovirt_quota,
-                        :keyboard_layout,
-                        :use_v4,
-                        :public_key,
-                        :uuid
+            :ovirt_quota,
+            :keyboard_layout,
+            :use_v4,
+            :public_key,
+            :uuid
         end
       end
     end

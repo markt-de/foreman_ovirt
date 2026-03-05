@@ -1,10 +1,14 @@
+# frozen_string_literal: true
+
 module ForemanOvirt
   module Concerns
     module ComputeResourcesControllerExtensions
       extend ActiveSupport::Concern
 
       prepended do
-        before_action :change_datacenter_to_uuid, only: [:create, :update]
+        # rubocop:disable Rails/LexicallyScopedActionFilter
+        before_action :change_datacenter_to_uuid, only: %i[create update]
+        # rubocop:enable Rails/LexicallyScopedActionFilter
         rescue_from ::ProxyAPI::Ovirt::Unauthorized, with: :render_ovirt_unauthorized_error
       end
 
@@ -38,7 +42,11 @@ module ForemanOvirt
       private
 
       def change_datacenter_to_uuid
-        return unless params[:compute_resource] && params[:compute_resource][:provider] == 'Ovirt' && params[:compute_resource][:datacenter]
+        unless params[:compute_resource] &&
+               params[:compute_resource][:provider] == 'Ovirt' &&
+               params[:compute_resource][:datacenter]
+          return
+        end
         proxy = find_resource(params[:id]) if params[:id].present?
         proxy ||= ::ProxyAPI::Ovirt.new(
           url: params[:compute_resource][:url],
@@ -48,12 +56,13 @@ module ForemanOvirt
         uuid = proxy.datacenter_uuid_by_name(params[:compute_resource][:datacenter])
         params[:compute_resource][:datacenter] = uuid
       rescue ::ProxyAPI::Ovirt::Unauthorized
+        # Do nothing, allow the process to continue or fail elsewhere
       rescue Foreman::Exception => e
         render_error e.message, status: :not_found
       end
 
       def render_ovirt_unauthorized_error
-        render_error "401 Unauthorized", status: :unauthorized
+        render_error '401 Unauthorized', status: :unauthorized
       end
     end
   end

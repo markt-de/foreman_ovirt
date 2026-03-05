@@ -1,3 +1,42 @@
+#inherit_from: .rubocop_todo.yml
+
 inherit_gem:
   theforeman-rubocop:
     - default.yml
+
+Metrics/BlockLength:
+  Exclude:
+    - 'test/**/*'
+    - 'app/models/foreman_ovirt/ovirt.rb'
+
+Metrics/ClassLength:
+  Exclude:
+    - 'app/models/foreman_ovirt/ovirt.rb'
+    - 'test/models/compute_resources/ovirt_test.rb'
+
+
+Naming/MethodParameterName:
+  Exclude:
+    - 'app/models/foreman_ovirt/ovirt.rb'
+
+Rails/HelperInstanceVariable:
+  Exclude:
+    - 'app/helpers/ovirt_compute_resource_helper.rb'
+
+Metrics/AbcSize:
+  Max: 60
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/CyclomaticComplexity:
+  Max: 15
+
+Metrics/MethodLength:
+  Max: 45
+
+Metrics/PerceivedComplexity:
+  Max: 15
+
+AllCops:
+  TargetRubyVersion: 2.7
