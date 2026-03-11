@@ -1,0 +1,42 @@
+---
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+      - '*-stable'
+      - 'gha'
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+
+      - name: Run Rubocop
+        run: bundle exec rubocop --parallel --format github
+
+  test_ruby:
+    name: Ruby
+    needs: rubocop
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    with:
+      plugin: foreman_ovirt

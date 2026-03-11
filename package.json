@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.7.0",
+    "@sheerun/mutationobserver-shim": "^0.3.3",
     "@theforeman/builder": ">= 15.0.1",
     "@theforeman/eslint-plugin-foreman": ">= 15.0.1",
     "@theforeman/find-foreman": ">= 15.0.1",
