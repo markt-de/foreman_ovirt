@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require File.expand_path('lib/foreman_ovirt/version', __dir__)
 
 Gem::Specification.new do |s|
@@ -10,7 +12,8 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/markt-de/foreman_ovirt'
   s.summary     = 'oVirt as a compute resource for Foreman'
   # also update locale/gemspec.rb
-  s.description = 'The Foreman oVirt plugin adds oVirt compute resource to Foreman using fog-ovirt. It is compatible with Foreman 3.16+'
+  s.description = 'The ForemanOvirt plugin adds oVirt compute resource to Foreman ' \
+    'using fog-ovirt. It is compatible with Foreman 3.16+'
 
   s.files = Dir['{app,config,db,lib,locale,webpack}/**/*'] + ['LICENSE', 'Rakefile', 'README.md', 'package.json']
   s.test_files = Dir['test/**/*'] + Dir['webpack/**/__tests__/*.js']
