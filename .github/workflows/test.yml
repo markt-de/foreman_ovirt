@@ -14,11 +14,37 @@ concurrency:
 
 jobs:
   rubocop:
-    uses: theforeman/actions/.github/workflows/rubocop.yml@v0
+    name: Rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+      - name: Run Rubocop
+        run: bundle exec rubocop
 
   test_ruby:
     name: Ruby
     needs: rubocop
-    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
-    with:
-      plugin: foreman_ovirt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev
+
+      - name: Setup Foreman
+        uses: theforeman/actions/setup-foreman-plugin@master
+        with:
+          plugin: foreman_ovirt
+
+      - name: Run Tests
+        run: bundle exec rake test

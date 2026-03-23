@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ['markt.de']
   s.email       = ['github-oss-noreply@markt.de']
   s.homepage    = 'https://github.com/markt-de/foreman_ovirt'
-  s.summary     = 'oVirt as a compute resource for The Foreman'
+  s.summary     = 'oVirt as a compute resource for Foreman'
   # also update locale/gemspec.rb
   s.description = 'The ForemanOvirt plugin adds oVirt compute resource to Foreman ' \
     'using fog-ovirt. It is compatible with Foreman 3.16+'
