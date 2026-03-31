@@ -13,26 +13,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup-dependencies:
-    name: Install system dependencies
+  rubocop:
     runs-on: ubuntu-latest
     steps:
-      - name: Install libcurl and libxml2
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev
-
-  rubocop:
-    uses: theforeman/actions/.github/workflows/rubocop.yml@v0
-    with:
-      command: bundle exec rubocop --parallel --format github
-      ruby: '3.0'
+      - run: sudo apt-get update
+      - run: sudo apt-get -qq -y install libcurl4-openssl-dev libxml2-dev
+      - name: RuboCop
+        uses: theforeman/actions/.github/workflows/rubocop.yml@v0
+        with:
+          command: bundle exec rubocop --parallel --format github
+          ruby: '3.0'
 
   test:
     name: Ruby
     needs:
       - rubocop
-      - setup-dependencies
-    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
-    with:
-      plugin: foreman_ovirt
+    steps:
+      - run: sudo apt-get update
+      - run: sudo apt-get -qq -y install libcurl4-openssl-dev libxml2-dev
+      - name: Run tests
+        uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+        with:
+          plugin: foreman_ovirt
