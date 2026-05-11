@@ -46,8 +46,15 @@ module ForemanOvirt
 
       click_button('Submit')
 
-      # Verify submission succeeded
-      assert page.has_text?('test'), 'Profile name not found after submission'
+      # A successful form submission redirects from the compute_attributes form
+      # to the compute profile show page at /compute_profiles/:id
+      assert_current_path(%r{/compute_profiles/\d+-test}, ignore_query: true)
+      created_profile = ComputeProfile.find_by(name: 'test')
+      assert_not_nil created_profile, 'Compute profile "test" should be created in database'
+
+      compute_attribute = created_profile.compute_attributes.find_by(compute_resource_id: @ovirt_cr.id)
+      assert_not_nil compute_attribute, 'oVirt compute attributes should be created for this profile'
+      assert_equal '2', compute_attribute.vm_attrs['cores'].to_s, 'Cores should be saved as 2 in the database'
 
       # Reload the profile and verify the values persisted to the database
       visit compute_profiles_path
