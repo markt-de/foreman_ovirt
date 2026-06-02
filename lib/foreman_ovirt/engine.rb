@@ -61,6 +61,7 @@ module ForemanOvirt
 
       ::ComputeResourcesVmsController.include ForemanOvirt::ComputeResourcesVmsController
       ::ComputeResourcesController.include ForemanOvirt::ParametersExtension
+      ::Api::V2::ComputeResourcesController.include ForemanOvirt::ApiComputeResourcesControllerExtension
     rescue StandardError => e
       Rails.logger.warn "ForemanOvirt: skipping engine hook (#{e})"
     end
