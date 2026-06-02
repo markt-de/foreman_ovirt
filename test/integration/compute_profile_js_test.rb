@@ -5,8 +5,22 @@ require 'integration_test_helper'
 
 module ForemanOvirt
   class ComputeProfileJSTest < IntegrationTestWithJavascript
+    HWP_SMALL_ATTRS = {
+      id: '2a08ba05-f3b1-4e5a-ade9-496466a8b323',
+      name: 'hwp_small',
+      memory: 536_870_912,
+      cores: 1,
+      sockets: 1,
+      ha: false,
+      interfaces: [],
+      volumes: [],
+    }.freeze
+
     setup do
       Fog.mock!
+      @ovirt_cr = FactoryBot.create(:ovirt_cr)
+      mock_template = OpenStruct.new(HWP_SMALL_ATTRS)
+      ForemanOvirt::Ovirt.any_instance.stubs(:template).returns(mock_template)
     end
 
     teardown do
@@ -14,58 +28,32 @@ module ForemanOvirt
     end
 
     test 'create compute profile' do
-      @ovirt_cr = FactoryBot.create(:ovirt_cr)
-
-      # Mock templates so they're available in the form dropdown
-      template1 = Struct.new(:id, :full_name).new('tpl1', 'template 1')
-      template2 = Struct.new(:id, :full_name).new('tpl2', 'template 2')
-      ForemanOvirt::Ovirt.any_instance.stubs(:templates).returns([template1, template2])
-
       visit compute_profiles_path
       click_on('Create Compute Profile')
-
-      work_around_selenium_file_detector_bug if respond_to?(:work_around_selenium_file_detector_bug)
-
       fill_in('compute_profile_name', with: 'test')
       click_on('Submit')
 
-      # Click into the oVirt compute resource tab
       assert click_link(@ovirt_cr.to_s), 'Failed to click oVirt compute resource link'
-
-      # Verify the form has the required fields
-      assert page.has_select?('compute_attribute_vm_attrs_vm_template'), 'Template field not found'
-      assert page.has_field?('compute_attribute_vm_attrs_memory'), 'Memory field not found'
-      assert page.has_field?('compute_attribute_vm_attrs_cores'), 'Cores field not found'
-
-      # Select a template
-      select('template 1', from: 'compute_attribute_vm_attrs_vm_template')
+      assert page.has_select?('compute_attribute[vm_attrs][vm_template]'),
+             'Template select field not found on compute attribute form'
+      select('hwp_small (base version)', from: 'compute_attribute[vm_attrs][vm_template]')
       wait_for_ajax
 
-      fill_in('compute_attribute_vm_attrs_memory', with: '512')
-      fill_in('compute_attribute_vm_attrs_cores', with: '2')
+      assert_equal '512 MB', find_field('compute_attribute_vm_attrs_memory').value,
+                   'Memory should auto-populate from the selected template via AJAX'
+      assert_equal '1', find_field('compute_attribute_vm_attrs_cores').value,
+                   'Cores should auto-populate from the selected template via AJAX'
 
       click_button('Submit')
-
-      # A successful form submission redirects from the compute_attributes form
-      # to the compute profile show page at /compute_profiles/:id
-      assert_current_path(%r{/compute_profiles/\d+-test}, ignore_query: true)
-      created_profile = ComputeProfile.find_by(name: 'test')
-      assert_not_nil created_profile, 'Compute profile "test" should be created in database'
-
-      compute_attribute = created_profile.compute_attributes.find_by(compute_resource_id: @ovirt_cr.id)
-      assert_not_nil compute_attribute, 'oVirt compute attributes should be created for this profile'
-      assert_equal '2', compute_attribute.vm_attrs['cores'].to_s, 'Cores should be saved as 2 in the database'
-
-      # Reload the profile and verify the values persisted to the database
+      assert_current_path compute_profile_path(ComputeProfile.find_by!(name: 'test'))
       visit compute_profiles_path
       click_link('test')
       assert click_link(@ovirt_cr.to_s), 'Failed to click oVirt compute resource link on reload'
 
-      memory_value = find_field('compute_attribute_vm_attrs_memory').value
-      cores_value = find_field('compute_attribute_vm_attrs_cores').value
-
-      assert_not memory_value.empty?, 'Memory value should not be empty after reload'
-      assert_equal '2', cores_value, 'Cores value should persist after reload'
+      assert_equal '512 MB', find_field('compute_attribute_vm_attrs_memory').value,
+                   'Memory should persist as 512 MB after reload'
+      assert_equal '1', find_field('compute_attribute_vm_attrs_cores').value,
+                   'Cores should persist as 1 after reload'
     end
   end
 end
