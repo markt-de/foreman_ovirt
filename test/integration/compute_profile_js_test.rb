@@ -8,9 +8,6 @@ module ForemanOvirt
     setup do
       Fog.mock!
       @ovirt_cr = FactoryBot.create(:ovirt_cr)
-
-      @mock_template = FactoryBot.build(:ovirt_template)
-      ForemanOvirt::Ovirt.any_instance.stubs(:template).returns(@mock_template)
     end
 
     teardown do
@@ -29,6 +26,7 @@ module ForemanOvirt
       # Selecting a template triggers a POST to template_selected. The JS handler
       # in ovirt.js receives the response and populates memory and cores via
       # setMemoryInputProps and updateCoresAndSockets.
+      # Fog.mock! intercepts the client calls so no real oVirt connection is made.
       select('hwp_small (base version)', from: 'compute_attribute[vm_attrs][vm_template]')
       wait_for_ajax
 
@@ -39,6 +37,7 @@ module ForemanOvirt
 
       # Reload the form and verify the template values were saved and are
       # rendered back correctly by the server.
+      # hwp_small has memory: 536870912 (512 MB) and cores: 1 per Fog mock data.
       visit compute_profiles_path
       click_link('test')
       click_link(@ovirt_cr.to_s)

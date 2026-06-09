@@ -25,8 +25,8 @@ function templateSelected(item) {
     url,
     data: `template_id=${template}`,
     success(result) {
-      // As Instance Type values will take precence over templates values,
-      // we don't update memory/cores values if  instance type is already selected
+      // As Instance Type values will take precedence over template values,
+      // we don't update memory/cores values if an instance type is already selected.
       if (!$('#host_compute_attributes_instance_type').val()) {
         updateCoresAndSockets(result);
         setMemoryInputProps({ value: result.memory });
@@ -60,6 +60,11 @@ function templateSelected(item) {
 
 function instanceTypeSelected(item) {
   const instanceType = $(item).val();
+
+  // Ignore empty instance type values. Select2 can fire change on init.
+  if (!instanceType) {
+    return;
+  }
 
   if (!item.disabled) {
     const url = $(item).attr('data-url');
@@ -138,6 +143,10 @@ function addVolume({
     .hide();
 }
 
+// Update the memory FormField props and the hidden input value.
+// Memory input component keeps its own internal state on mount, so changing
+// reactProps alone may not update the hidden input used for form submission.
+// To be safe we set reactProps and also update the hidden input directly.
 function setMemoryInputProps(props) {
   const newProps = { ...props };
 
@@ -145,13 +154,32 @@ function setMemoryInputProps(props) {
     newProps.value = parseInt(newProps.value, 10);
   }
 
-  const memoryInputElement = getComponentByWrapperId('memory-input');
-  memoryInputElement.reactProps = {
-    ...memoryInputElement.reactProps,
-    ...newProps,
-  };
+  const wrapper = document.getElementById('memory-input');
+  if (!wrapper) return;
+
+  const element = wrapper.getElementsByTagName('foreman-react-component')[0];
+  if (element) {
+    element.reactProps = {
+      ...element.reactProps,
+      ...newProps,
+    };
+  }
+
+  // Also set the hidden input directly because the memory component keeps
+  // its own state and may not apply prop updates immediately.
+  if (newProps.value !== undefined) {
+    const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+    if (hiddenInput) hiddenInput.value = newProps.value;
+  }
+
+  if (newProps.disabled !== undefined) {
+    const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+    if (hiddenInput) hiddenInput.disabled = newProps.disabled;
+  }
 }
 
+// Update cores and sockets FormField props from AJAX result.
+// These are simple numeric fields so updating reactProps is sufficient.
 function updateCoresAndSockets(result) {
   const coresInputElement = getComponentByWrapperId('cores-input');
   coresInputElement.reactProps = {
@@ -202,6 +230,7 @@ function bootableRadio(item) {
     $(item).prop('checked', true);
   }
 }
+
 function clusterSelected(item) {
   const cluster = $(item).val();
   const url = $(item).data('url');
