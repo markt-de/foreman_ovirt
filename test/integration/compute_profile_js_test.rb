@@ -37,7 +37,7 @@ module ForemanOvirt
 
       # Reload the form and verify the template values were saved and are
       # rendered back correctly by the server.
-      # hwp_small has memory: 536870912 (512 MB) and cores: 1 per Fog mock data.
+      # hwp_small has memory: 536870912 bytes (512 MB) and cores: 1 per Fog mock data.
       visit compute_profiles_path
       click_link('test')
       click_link(@ovirt_cr.to_s)
