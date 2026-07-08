@@ -664,5 +664,24 @@ module ForemanOvirt
         assert_equal 'false', attrs[:volumes_attributes]['0'][:wipe_after_delete]
       end
     end
+
+    describe '#get_datacenter_uuid' do
+      test 'resolves datacenter name from datacenters list' do
+        uuid = Foreman.uuid
+        cr = FactoryBot.build(:ovirt_cr)
+        cr.stubs(:datacenters).returns([
+                                         ['prod', uuid],
+                                         ['dev', Foreman.uuid],
+                                       ])
+        assert_equal uuid, cr.get_datacenter_uuid('prod')
+      end
+
+      test 'raises when datacenter is unknown' do
+        cr = FactoryBot.build(:ovirt_cr)
+        cr.stubs(:datacenters).returns([['dev', Foreman.uuid]])
+        error = assert_raise(Foreman::Exception) { cr.get_datacenter_uuid('prod') }
+        assert_match(/Datacenter was not found/, error.message)
+      end
+    end
   end
 end
