@@ -19,12 +19,10 @@ module ForemanOvirt
 
           register_global_js_file 'global'
 
-          security_block :foreman_ovirt do
-            permission :view_compute_resources, {
-              'foreman_ovirt/compute_resources': [:available_vnic_profiles],
-              'api/v2/compute_resources': [:available_vnic_profiles],
-            }
-          end
+          p = Foreman::AccessControl.permission(:view_compute_resources)
+          p.actions.concat(%w[foreman_ovirt/compute_resources/available_vnic_profiles
+                              api/v2/compute_resources/available_vnic_profiles])
+          p.actions.uniq!
         end
       end
     end
