@@ -1,0 +1,18 @@
+name: JavaScript Testing
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: JavaScript
+    uses: theforeman/actions/.github/workflows/foreman_plugin_js.yml@v1
+    with:
+      plugin: foreman_ovirt
+      additional_packages: libcurl4-openssl-dev
