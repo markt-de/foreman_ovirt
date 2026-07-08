@@ -21,7 +21,7 @@ module ForemanOvirt
 
           p = Foreman::AccessControl.permission(:view_compute_resources)
           p.actions.concat(%w[foreman_ovirt/compute_resources/available_vnic_profiles
-                    api/v2/compute_resources/available_vnic_profiles])
+                              api/v2/compute_resources/available_vnic_profiles])
           p.actions.uniq!
         end
       end
