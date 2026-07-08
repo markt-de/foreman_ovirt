@@ -64,7 +64,7 @@ jobs:
           ruby-version: ruby
 
       - name: Configure RubyGems Credentials
-        uses: rubygems/configure-rubygems-credentials@v1.0.0
+        uses: rubygems/configure-rubygems-credentials@v2.1.0
 
       - name: Publish to RubyGems.org
         run: gem push "$(ls -t *.gem | head -n 1)"
