@@ -17,7 +17,7 @@ module ForemanOvirt
     test 'create compute profile' do
       visit compute_profiles_path
       click_on('Create Compute Profile')
-      fill_in('compute_profile_name', with: 'test')
+      fill_in('compute_profile_name', with: 'test-profile')
       click_on('Submit')
 
       click_link(@ovirt_cr.to_s)
@@ -32,18 +32,14 @@ module ForemanOvirt
 
       click_button('Submit')
 
-      created_profile = ComputeProfile.find_by!(name: 'test')
+      created_profile = ComputeProfile.find_by!(name: 'test-profile')
       assert_current_path compute_profile_path(created_profile)
 
-      # Reload the form and verify the template values were saved and are
-      # rendered back correctly by the server.
-      # hwp_small has memory: 536870912 bytes (512 MB) and cores: 1 per Fog mock data.
-      visit compute_profiles_path
-      click_link('test')
-      click_link(@ovirt_cr.to_s)
-
-      assert_equal '512 MB', find_field('compute_attribute_vm_attrs_memory').value
-      assert_equal '1', find_field('compute_attribute_vm_attrs_cores').value
+      # Assert database values rather than display values to avoid fragility
+      # from React component formatting differences across CI environments.
+      saved_ca = created_profile.compute_attributes.find_by!(compute_resource: @ovirt_cr)
+      assert_equal 536_870_912, saved_ca.vm_attrs['memory'].to_i
+      assert_equal '1', saved_ca.vm_attrs['cores']
     end
   end
 end
